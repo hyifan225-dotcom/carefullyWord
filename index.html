@@ -3,574 +3,227 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>温暖的话语</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            position: relative;
-            transition: background 1s ease;
-        }
-        
-        body.dark-mode {
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-        }
-        
-        .container {
-            position: relative;
-            width: 100%;
-            height: 100vh;
-            max-width: 1200px;
-        }
-        
-        .message {
-            position: absolute;
-            font-size: 1.2rem;
-            color: #fff;
-            opacity: 0;
-            transform: scale(0.8) rotate(-5deg);
-            transition: all 1.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            text-align: center;
-            width: 160px;
-            padding: 10px;
-            border-radius: 12px;
-            background: rgba(255, 255, 255, 0.15);
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-            backdrop-filter: blur(4px);
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            cursor: pointer;
-            z-index: 5;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        
-        .message.show {
-            opacity: 1;
-            transform: scale(1) rotate(0deg);
-        }
-        
-        .message:hover {
-            transform: scale(1.15) rotate(3deg);
-            box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.5);
-            z-index: 10;
-            white-space: normal;
-            overflow: visible;
-        }
-        
-        .message.clicked {
-            animation: pulse 0.6s ease;
-        }
-        
-        @keyframes pulse {
-            0% { transform: scale(1) rotate(0deg); }
-            25% { transform: scale(1.2) rotate(-10deg); }
-            50% { transform: scale(0.9) rotate(5deg); }
-            75% { transform: scale(1.1) rotate(-3deg); }
-            100% { transform: scale(1) rotate(0deg); }
-        }
-        
-        .title {
-            position: absolute;
-            top: 20px;
-            left: 0;
-            right: 0;
-            text-align: center;
-            font-size: 2.5rem;
-            color: #fff;
-            opacity: 0;
-            animation: fadeInDown 2s forwards 0.5s;
-            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
-            z-index: 20;
-        }
-        
-        @keyframes fadeInDown {
-            from { 
-                opacity: 0; 
-                transform: translateY(-30px); 
+    <title>tips</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    
+    <!-- 配置Tailwind自定义颜色和字体 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        secondary: '#EC4899',
+                        accent: '#10B981',
+                        dark: '#1F2937',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
             }
-            to { 
-                opacity: 1; 
-                transform: translateY(0); 
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .popup-shadow {
+                box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            }
+            .popup-appear {
+                animation: popupIn 0.5s ease-out forwards;
+            }
+            .popup-disappear {
+                animation: popupOut 0.5s ease-in forwards;
             }
         }
         
-        .heart, .star {
-            position: absolute;
-            font-size: 1.5rem;
-            opacity: 0;
-            pointer-events: none;
-        }
-        
-        .heart {
-            color: #ff6b6b;
-            animation: floatUp 8s linear infinite;
-        }
-        
-        .star {
-            color: #ffd93d;
-            animation: twinkle 3s ease-in-out infinite;
-        }
-        
-        @keyframes floatUp {
-            0% { 
-                transform: translateY(0) rotate(0deg); 
-                opacity: 0; 
-            }
-            10% { 
-                opacity: 1; 
-            }
-            90% { 
-                opacity: 1; 
-            }
-            100% { 
-                transform: translateY(-100vh) rotate(360deg); 
-                opacity: 0; 
-            }
-        }
-        
-        @keyframes twinkle {
-            0%, 100% { 
+        @keyframes popupIn {
+            from {
                 opacity: 0;
-                transform: scale(0.5);
+                transform: scale(0.8) translateY(20px);
             }
-            50% { 
+            to {
                 opacity: 1;
-                transform: scale(1.2);
+                transform: scale(1) translateY(0);
             }
         }
         
-        .controls {
-            position: absolute;
-            top: 80px;
-            right: 20px;
-            display: flex;
-            gap: 10px;
-            z-index: 30;
-        }
-        
-        .control-btn {
-            padding: 8px 16px;
-            background: rgba(255, 255, 255, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 20px;
-            color: #fff;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-            font-size: 0.85rem;
-        }
-        
-        .control-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: translateY(-2px);
-        }
-        
-        .instruction {
-            position: absolute;
-            bottom: 20px;
-            left: 0;
-            right: 0;
-            text-align: center;
-            font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.8);
-            opacity: 0.7;
-            z-index: 10;
-        }
-        
-        .particle {
-            position: absolute;
-            width: 4px;
-            height: 4px;
-            background: rgba(255, 255, 255, 0.8);
-            border-radius: 50%;
-            pointer-events: none;
-        }
-        
-        .custom-message-input {
-            position: absolute;
-            bottom: 60px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: none;
-            z-index: 25;
-        }
-        
-        .custom-message-input.show {
-            display: flex;
-            gap: 10px;
-        }
-        
-        .custom-message-input input {
-            padding: 10px 15px;
-            border: none;
-            border-radius: 20px;
-            background: rgba(255, 255, 255, 0.9);
-            font-size: 1rem;
-            width: 250px;
-        }
-        
-        .custom-message-input button {
-            padding: 10px 20px;
-            background: #4ecdc4;
-            border: none;
-            border-radius: 20px;
-            color: #fff;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .custom-message-input button:hover {
-            background: #45b7b0;
-        }
-        
-        .heart-shape-container {
-            position: absolute;
-            pointer-events: none;
-            width: 200px;
-            height: 180px;
-            transform: translate(-50%, -50%);
-            z-index: 15;
-        }
-        
-        .heart-emoji {
-            position: absolute;
-            font-size: 1.5rem;
-            animation: heartFloat 1.5s ease-out forwards;
-        }
-        
-        @keyframes heartFloat {
-            0% {
-                transform: scale(0) rotate(0deg);
-                opacity: 0;
-            }
-            20% {
+        @keyframes popupOut {
+            from {
                 opacity: 1;
+                transform: scale(1);
             }
-            100% {
-                transform: scale(1.5) rotate(360deg);
+            to {
                 opacity: 0;
+                transform: scale(0.8);
             }
         }
     </style>
 </head>
-<body>
-    <div class="container" id="container">
-        <h1 class="title">💝 关心的话 💝</h1>
+<body class="bg-gray-100 min-h-screen font-sans">
+    <div class="container mx-auto px-4 py-8">
+        <header class="text-center mb-12">
+    
+        </header>
+        
+        <div class="text-center mb-8">
+            <button id="generateBtn" class="bg-primary hover:bg-primary/90 text-white font-bold py-3 px-8 rounded-full shadow-lg transform transition hover:scale-105 focus:outline-none focus:ring-4 focus:ring-primary/50">
+                <i class="fa fa-magic mr-2"></i>start
+            </button>
+            <button id="clearBtn" class="ml-4 bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-8 rounded-full shadow-lg transform transition hover:scale-105 focus:outline-none focus:ring-4 focus:ring-gray-500/50">
+                <i class="fa fa-trash mr-2"></i>puase
+            </button>
+        </div>
     </div>
-    
-    <div class="controls">
-        <button class="control-btn" onclick="toggleDarkMode()">🌙 夜间</button>
-        <button class="control-btn" onclick="showCustomInput()">✍️ 添加</button>
-        <button class="control-btn" onclick="refreshMessages()">🔄 换一批</button>
-    </div>
-    
-    <div class="custom-message-input" id="customInput">
-        <input type="text" id="customText" placeholder="输入你的温暖话语..." maxlength="15">
-        <button onclick="addCustomMessage()">发送</button>
-    </div>
-    
-    <div class="instruction">点击话语会有惊喜 ✨ 话语围成了爱心</div>
-    
+ 
     <script>
-        const allMessages = [
-            "愿你今天过得开心",
-            "记得照顾好自己",
-            "你值得被温柔以待",
-            "无论何时，你都不是一个人",
-            "你的努力我都看在眼里",
-            "累了就休息一下",
-            "你比自己想象的要坚强",
-            "每一天都是新的开始",
-            "你的微笑是最美的风景",
-            "一切都会慢慢好起来的",
-            "相信自己，你可以的",
-            "别忘了给自己一个拥抱",
-            "风雨过后总会有彩虹",
-            "你的存在本身就是一种美好",
-            "小小的进步也值得庆祝",
-            "别对自己太苛刻",
-            "你让世界变得更美好",
-            "你的感受很重要",
-            "慢慢来，不用着急",
-            "你已经做得很好了",
-            "今天也要好好爱自己",
-            "你的努力终将开花结果",
-            "别忘记微笑，它很有力量",
-            "你是独一无二的",
-            "生命因你而精彩",
-            "今天的你也很棒",
-            "给自己一点耐心",
-            "你的善良温暖了世界",
-            "保持希望，美好在路上",
-            "你是被爱着的",
-            "勇敢做自己",
-            "所有的美好都在路上",
-            "你的梦想很珍贵",
-            "今天也辛苦了",
-            "温柔对待自己",
-            "你的光芒照亮了别人",
+        // 提示词数组
+        const prompts = [
+            "好好爱自己？",
+            "每一次努力都不会白费",
+            "保持好奇心，探索未知世界",
+            "生活就像一盒巧克力，你永远不知道下一颗是什么",
+            "多多陪家里人",
+            "学习新东西永远不嫌晚",
+            "珍惜当下，活在今天",
+            "好好吃饭",
+            "保持微笑",
+            "每天进步一点点",
+            "相信自己，你能做到",
+            "感恩生命中遇到的每一个人",
+            "保持乐观，一切都会好起来",
+            "阅读是心灵的旅行",
+            "健康是人生最大的财富",
+            "付出总有回报",
+            "梦想需要行动去实现",
+            "细节决定成败",
+            "用善意对待世界",
             "坚持就是胜利",
-            "你是生活的勇士",
-            "你的坚持令人敬佩",
-            "你的心情比什么都重要",
-            "做最真实的自己",
-            "你的善良会收获美好"
+			  "大吉大利",
+            "顺顺利利",
+            "每天都要开心",
+			 "珍惜每一次见面",
+            "早点下班，好好休息",
+			  "多喝开水",
+            "顺顺利利",
+            "每天都要开心"
+			
+			
         ];
         
-        const emojis = ['❤️', '✨', '🌟', '💫', '🌈', '🦋', '🌺', '🌸', '💖', '🎈', '🌻', '🍀', '🌷', '🌹', '🌼', '🌙', '☀️', '⭐'];
-        const container = document.getElementById('container');
-        let isDarkMode = false;
-        let currentMessages = [];
-        const maxMessages = 20; // 增加消息数量以形成更完整的爱心
+        // 弹窗背景颜色数组
+        const popupColors = [
+            'bg-blue-50 border-blue-200',
+            'bg-pink-50 border-pink-200',
+            'bg-green-50 border-green-200',
+            'bg-yellow-50 border-yellow-200',
+            'bg-purple-50 border-purple-200',
+            'bg-indigo-50 border-indigo-200',
+            'bg-red-50 border-red-200',
+            'bg-teal-50 border-teal-200'
+        ];
         
-        function getRandomMessages() {
-            const shuffled = [...allMessages].sort(() => 0.5 - Math.random());
-            return shuffled.slice(0, Math.min(maxMessages, shuffled.length));
-        }
-        
-        // 计算爱心形状的坐标位置
-        function getHeartPosition(index, total) {
-            // 使用参数方程生成心形
-            const t = (index / total) * 2 * Math.PI - Math.PI / 2;
+        // 生成随机弹窗
+        function generatePopup() {
+            // 创建弹窗元素
+            const popup = document.createElement('div');
             
-            // 心形参数方程
-            const x = 16 * Math.pow(Math.sin(t), 3);
-            const y = -(13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t));
+            // 随机选择提示词
+            const randomPrompt = prompts[Math.floor(Math.random() * prompts.length)];
             
-            // 调整缩放和位置
-            const scaleX = 1.8; // 水平缩放
-            const scaleY = 1.8; // 垂直缩放
+            // 随机选择背景颜色
+            const randomColor = popupColors[Math.floor(Math.random() * popupColors.length)];
             
-            // 中心位置 (50%, 55% 偏下一些以容纳标题)
-            const centerX = 50;
-            const centerY = 55;
+            // 设置弹窗样式
+            popup.className = `fixed p-5 rounded-lg border popup-shadow popup-appear ${randomColor} max-w-xs`;
             
-            // 计算最终位置
-            const left = centerX + x * scaleX;
-            const top = centerY + y * scaleY;
+            // 设置弹窗内容
+            popup.innerHTML = `
+                <div class="flex justify-between items-start mb-3">
+                    <h3 class="font-bold text-gray-800">提示</h3>
+                    <button class="close-btn text-gray-500 hover:text-gray-700 transition">
+                        <i class="fa fa-times"></i>
+                    </button>
+                </div>
+                <p class="text-gray-700">${randomPrompt}</p>
+            `;
             
-            return { left, top };
-        }
-        
-        function createMessage(text, index, total) {
-            const message = document.createElement('div');
-            message.className = 'message';
-            message.textContent = text;
+            // 计算随机位置（确保弹窗完全显示在屏幕内）
+            const maxLeft = window.innerWidth - 300; // 300是弹窗大致宽度
+            const maxTop = window.innerHeight - 200; // 200是弹窗大致高度
+            const randomLeft = Math.floor(Math.random() * maxLeft);
+            const randomTop = Math.floor(Math.random() * maxTop);
             
-            const { left, top } = getHeartPosition(index, total);
-            message.style.left = `${left}%`;
-            message.style.top = `${top}%`;
+            // 设置弹窗位置
+            popup.style.left = `${randomLeft}px`;
+            popup.style.top = `${randomTop}px`;
+            popup.style.zIndex = '1000';
             
-            // 调整延迟，让话语按顺序出现在爱心路径上
-            const delay = 200 + index * 120;
+            // 添加到页面
+            document.body.appendChild(popup);
             
-            container.appendChild(message);
-            
-            setTimeout(() => {
-                message.classList.add('show');
-            }, delay);
-            
-            message.addEventListener('click', function(e) {
-                message.classList.add('clicked');
-                createHeartShape(e.pageX, e.pageY);
-                createParticles(e.pageX, e.pageY);
+            // 关闭按钮事件
+            popup.querySelector('.close-btn').addEventListener('click', () => {
+                popup.classList.remove('popup-appear');
+                popup.classList.add('popup-disappear');
                 setTimeout(() => {
-                    message.classList.remove('clicked');
-                }, 600);
+                    popup.remove();
+                }, 500);
             });
             
-            return message;
+            // 点击弹窗外部关闭（可选）
+            popup.addEventListener('click', (e) => {
+                if (e.target === popup) {
+                    popup.classList.remove('popup-appear');
+                    popup.classList.add('popup-disappear');
+                    setTimeout(() => {
+                        popup.remove();
+                    }, 500);
+                }
+            });
+            
+            // 设置自动关闭（5-10秒随机）
+		const autoCloseTime = 5000 + Math.random() * 5000;
+		setTimeout(() => {
+			popup.classList.remove('popup-appear');
+			popup.classList.add('popup-disappear');
+			setTimeout(() => {
+				popup.remove();
+			}, 500);
+		}, autoCloseTime);
         }
         
-        // 创建爱心形状的emoji爆炸效果
-        function createHeartShape(x, y) {
-            const heartContainer = document.createElement('div');
-            heartContainer.className = 'heart-shape-container';
-            heartContainer.style.left = x + 'px';
-            heartContainer.style.top = y + 'px';
-            document.body.appendChild(heartContainer);
-            
-            const heartPoints = [];
-            const numPoints = 15;
-            const scale = 1.5;
-            
-            for (let i = 0; i < numPoints; i++) {
-                const t = (i / numPoints) * 2 * Math.PI;
-                const px = 16 * Math.pow(Math.sin(t), 3);
-                const py = -(13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t));
-                heartPoints.push({x: px * scale, y: py * scale});
+        // 批量生成多个弹窗
+        function generateMultiplePopups() {
+            // 随机生成100+个弹窗
+            const count = 200 + Math.floor(Math.random()*1 * 100);
+            for (let i = 0; i < count; i++) {
+                // 每个弹窗间隔一段时间出现，增加动画效果
+                setTimeout(generatePopup, i * 300);
             }
-            
-            heartPoints.forEach((point, index) => {
+        }
+        
+        // 清除所有弹窗
+        function clearAllPopups() {
+            const popups = document.querySelectorAll('.popup-shadow');
+            popups.forEach(popup => {
+                popup.classList.remove('popup-appear');
+                popup.classList.add('popup-disappear');
                 setTimeout(() => {
-                    const emoji = document.createElement('div');
-                    emoji.className = 'heart-emoji';
-                    emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
-                    emoji.style.left = (point.x + 100) + 'px';
-                    emoji.style.top = (point.y + 90) + 'px';
-                    emoji.style.animationDelay = (index * 0.03) + 's';
-                    heartContainer.appendChild(emoji);
-                }, index * 30);
-            });
-            
-            setTimeout(() => {
-                heartContainer.remove();
-            }, 2000);
-        }
-        
-        function createParticles(x, y) {
-            for (let i = 0; i < 10; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                particle.style.left = x + 'px';
-                particle.style.top = y + 'px';
-                
-                const angle = (Math.PI * 2 * i) / 10;
-                const velocity = 30 + Math.random() * 40;
-                const vx = Math.cos(angle) * velocity;
-                const vy = Math.sin(angle) * velocity;
-                
-                document.body.appendChild(particle);
-                
-                let progress = 0;
-                const animate = () => {
-                    progress += 0.03;
-                    particle.style.transform = `translate(${vx * progress}px, ${vy * progress + 80 * progress * progress}px)`;
-                    particle.style.opacity = 1 - progress;
-                    
-                    if (progress < 1) {
-                        requestAnimationFrame(animate);
-                    } else {
-                        particle.remove();
-                    }
-                };
-                
-                requestAnimationFrame(animate);
-            }
-        }
-        
-        function createHeart() {
-            const heart = document.createElement('div');
-            heart.className = 'heart';
-            heart.textContent = '❤';
-            
-            const left = Math.random() * 100;
-            heart.style.left = `${left}%`;
-            
-            const delay = Math.random() * 5;
-            const duration = 6 + Math.random() * 6;
-            heart.style.animationDelay = `${delay}s`;
-            heart.style.animationDuration = `${duration}s`;
-            
-            container.appendChild(heart);
-            
-            setTimeout(() => {
-                heart.remove();
-            }, (delay + duration) * 1000);
-        }
-        
-        function createStar() {
-            const star = document.createElement('div');
-            star.className = 'star';
-            star.textContent = '⭐';
-            
-            const left = Math.random() * 100;
-            const top = Math.random() * 100;
-            star.style.left = `${left}%`;
-            star.style.top = `${top}%`;
-            
-            const delay = Math.random() * 3;
-            star.style.animationDelay = `${delay}s`;
-            
-            container.appendChild(star);
-        }
-        
-        function toggleDarkMode() {
-            isDarkMode = !isDarkMode;
-            document.body.classList.toggle('dark-mode');
-            const btn = event.target;
-            btn.textContent = isDarkMode ? '☀️ 日间' : '🌙 夜间';
-        }
-        
-        function showCustomInput() {
-            const input = document.getElementById('customInput');
-            input.classList.toggle('show');
-            if (input.classList.contains('show')) {
-                document.getElementById('customText').focus();
-            }
-        }
-        
-        function addCustomMessage() {
-            const input = document.getElementById('customText');
-            const text = input.value.trim();
-            
-            if (text && currentMessages.length < maxMessages) {
-                allMessages.push(text);
-                refreshMessages();
-                input.value = '';
-                showCustomInput();
-            }
-        }
-        
-        function refreshMessages() {
-            const messages = container.querySelectorAll('.message');
-            messages.forEach(msg => {
-                msg.style.opacity = '0';
-                msg.style.transform = 'scale(0.8) rotate(5deg)';
-                setTimeout(() => msg.remove(), 500);
-            });
-            
-            setTimeout(() => {
-                init();
-            }, 600);
-        }
-        
-        function clearAllMessages() {
-            const messages = container.querySelectorAll('.message');
-            messages.forEach(msg => {
-                msg.style.opacity = '0';
-                msg.style.transform = 'scale(0.8) rotate(5deg)';
-                setTimeout(() => msg.remove(), 500);
+                   // popup.remove();
+                }, 500);
             });
         }
         
-        function init() {
-            clearAllMessages();
-            currentMessages = getRandomMessages();
-            currentMessages.forEach((message, index) => {
-                createMessage(message, index, currentMessages.length);
-            });
-            
-            // 背景装饰元素
-            setInterval(createHeart, 4000);
-            
-            for (let i = 0; i < 5; i++) {
-                setTimeout(() => createStar(), i * 800);
-            }
-            
-            setInterval(createStar, 7000);
-        }
+        // 绑定按钮事件
+        document.getElementById('generateBtn').addEventListener('click', generateMultiplePopups);
+        document.getElementById('clearBtn').addEventListener('click', clearAllPopups);
         
-        window.addEventListener('DOMContentLoaded', init);
-        
-        document.getElementById('customText').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                addCustomMessage();
-            }
+        // 页面加载时自动生成一次弹窗
+        window.addEventListener('load', () => {
+            setTimeout(generateMultiplePopups, 1000);
         });
     </script>
 </body>

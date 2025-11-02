@@ -3,227 +3,269 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>tips</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
-    
-    <!-- 配置Tailwind自定义颜色和字体 -->
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#3B82F6',
-                        secondary: '#EC4899',
-                        accent: '#10B981',
-                        dark: '#1F2937',
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'system-ui', 'sans-serif'],
-                    },
-                }
-            }
+    <title>温馨关怀便利贴</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-    </script>
-    
-    <style type="text/tailwindcss">
-        @layer utilities {
-            .popup-shadow {
-                box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
-            }
-            .popup-appear {
-                animation: popupIn 0.5s ease-out forwards;
-            }
-            .popup-disappear {
-                animation: popupOut 0.5s ease-in forwards;
-            }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
         }
-        
-        @keyframes popupIn {
+
+        .container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+        }
+
+        .note {
+            position: absolute;
+            width: 180px;
+            min-height: 140px;
+            background: linear-gradient(135deg, #FFF9C4 0%, #FFF59D 100%);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            border-radius: 6px;
+            padding: 25px 15px 15px 15px;
+            animation: fadeInUp 0.5s ease-out;
+            transform-origin: center;
+            cursor: move;
+            transition: transform 0.2s;
+        }
+
+        .note:hover {
+            transform: scale(1.05) rotate(0deg) !important;
+            z-index: 1000;
+        }
+
+        .note::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 20px;
+            background: rgba(255, 193, 7, 0.3);
+            border-radius: 6px 6px 0 0;
+        }
+
+        .heart {
+            position: absolute;
+            top: 5px;
+            left: 10px;
+            color: #e91e63;
+            font-size: 13px;
+            animation: heartbeat 1.5s infinite;
+        }
+
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            25% { transform: scale(1.2); }
+            50% { transform: scale(1); }
+        }
+
+        .note-content {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #333;
+            text-align: center;
+            word-wrap: break-word;
+        }
+
+        @keyframes fadeInUp {
             from {
                 opacity: 0;
-                transform: scale(0.8) translateY(20px);
+                transform: translateY(30px) scale(0.8);
             }
             to {
                 opacity: 1;
-                transform: scale(1) translateY(0);
+                transform: translateY(0) scale(1);
             }
         }
-        
-        @keyframes popupOut {
-            from {
-                opacity: 1;
-                transform: scale(1);
-            }
-            to {
-                opacity: 0;
-                transform: scale(0.8);
-            }
+
+        .note-pink {
+            background: linear-gradient(135deg, #FFE0F0 0%, #FFB6D9 100%);
+        }
+
+        .note-blue {
+            background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%);
+        }
+
+        .note-green {
+            background: linear-gradient(135deg, #F1F8E9 0%, #DCEDC8 100%);
+        }
+
+        .note-purple {
+            background: linear-gradient(135deg, #F3E5F5 0%, #E1BEE7 100%);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 3px;
+            right: 8px;
+            background: none;
+            border: none;
+            font-size: 18px;
+            color: #999;
+            cursor: pointer;
+            opacity: 0.6;
+            transition: opacity 0.3s;
+        }
+
+        .close-btn:hover {
+            opacity: 1;
+            color: #666;
+        }
+
+        h1 {
+            position: absolute;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 36px;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+            z-index: 10;
         }
     </style>
 </head>
-<body class="bg-gray-100 min-h-screen font-sans">
-    <div class="container mx-auto px-4 py-8">
-        <header class="text-center mb-12">
-    
-        </header>
-        
-        <div class="text-center mb-8">
-            <button id="generateBtn" class="bg-primary hover:bg-primary/90 text-white font-bold py-3 px-8 rounded-full shadow-lg transform transition hover:scale-105 focus:outline-none focus:ring-4 focus:ring-primary/50">
-                <i class="fa fa-magic mr-2"></i>start
-            </button>
-            <button id="clearBtn" class="ml-4 bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-8 rounded-full shadow-lg transform transition hover:scale-105 focus:outline-none focus:ring-4 focus:ring-gray-500/50">
-                <i class="fa fa-trash mr-2"></i>puase
-            </button>
-        </div>
-    </div>
- 
+<body>
+    <h1>💝 温馨小贴士</h1>
+    <div class="container" id="container"></div>
+
     <script>
-        // 提示词数组
-        const prompts = [
-            "好好爱自己？",
-            "每一次努力都不会白费",
-            "保持好奇心，探索未知世界",
-            "生活就像一盒巧克力，你永远不知道下一颗是什么",
-            "多多陪家里人",
-            "学习新东西永远不嫌晚",
-            "珍惜当下，活在今天",
-            "好好吃饭",
-            "保持微笑",
-            "每天进步一点点",
-            "相信自己，你能做到",
-            "感恩生命中遇到的每一个人",
-            "保持乐观，一切都会好起来",
-            "阅读是心灵的旅行",
-            "健康是人生最大的财富",
-            "付出总有回报",
-            "梦想需要行动去实现",
-            "细节决定成败",
-            "用善意对待世界",
-            "坚持就是胜利",
-			  "大吉大利",
-            "顺顺利利",
-            "每天都要开心",
-			 "珍惜每一次见面",
-            "早点下班，好好休息",
-			  "多喝开水",
-            "顺顺利利",
-            "每天都要开心"
-			
-			
+        const messages = [
+            "记得多喝水哦，保持身体健康 💧",
+            "今天也要开心呀！😊",
+            "累了就休息一下，别太拼啦 🌸",
+            "你已经很棒了，继续加油！💪",
+            "不要忘记吃饭哦，按时用餐很重要 🍚",
+            "早点休息，熬夜对身体不好哦 🌙",
+            "记得适当运动，身体是革命的本钱 🏃",
+            "保持微笑，生活会更美好 ☀️",
+            "压力大的时候深呼吸，放松一下 🧘",
+            "你值得被温柔以待 💕",
+            "今天的你也很可爱 🌟",
+            "相信自己，你可以做到的！✨",
+            "别忘了给自己一个拥抱 🤗",
+            "做自己喜欢的事，开心最重要 🎨",
+            "天气变化记得添衣，别感冒了 🧥",
+            "偶尔偷个懒也没关系哦 😴",
+            "每一天都是新的开始 🌅",
+            "你的努力都会有回报的 🎁",
+            "记得保护好眼睛，别看屏幕太久 👀",
+            "心情不好的时候听听音乐吧 🎵"
         ];
-        
-        // 弹窗背景颜色数组
-        const popupColors = [
-            'bg-blue-50 border-blue-200',
-            'bg-pink-50 border-pink-200',
-            'bg-green-50 border-green-200',
-            'bg-yellow-50 border-yellow-200',
-            'bg-purple-50 border-purple-200',
-            'bg-indigo-50 border-indigo-200',
-            'bg-red-50 border-red-200',
-            'bg-teal-50 border-teal-200'
-        ];
-        
-        // 生成随机弹窗
-        function generatePopup() {
-            // 创建弹窗元素
-            const popup = document.createElement('div');
+
+        const colors = ['', 'note-pink', 'note-blue', 'note-green', 'note-purple'];
+        let noteIndex = 0;
+        let usedMessages = [];
+
+        function getRandomMessage() {
+            // 允许消息重复使用，确保有足够的内容
+            return messages[Math.floor(Math.random() * messages.length)];
+        }
+
+        function getRandomPosition() {
+            const container = document.getElementById('container');
+            const maxX = container.clientWidth - 200;
+            const maxY = container.clientHeight - 160;
+            const minY = 100;
             
-            // 随机选择提示词
-            const randomPrompt = prompts[Math.floor(Math.random() * prompts.length)];
+            return {
+                x: Math.random() * maxX + 10,
+                y: Math.random() * (maxY - minY) + minY
+            };
+        }
+
+        function createNote() {
+            const note = document.createElement('div');
+            const position = getRandomPosition();
+            const rotation = (Math.random() - 0.5) * 10;
+            const colorClass = colors[Math.floor(Math.random() * colors.length)];
             
-            // 随机选择背景颜色
-            const randomColor = popupColors[Math.floor(Math.random() * popupColors.length)];
-            
-            // 设置弹窗样式
-            popup.className = `fixed p-5 rounded-lg border popup-shadow popup-appear ${randomColor} max-w-xs`;
-            
-            // 设置弹窗内容
-            popup.innerHTML = `
-                <div class="flex justify-between items-start mb-3">
-                    <h3 class="font-bold text-gray-800">提示</h3>
-                    <button class="close-btn text-gray-500 hover:text-gray-700 transition">
-                        <i class="fa fa-times"></i>
-                    </button>
-                </div>
-                <p class="text-gray-700">${randomPrompt}</p>
+            note.className = `note ${colorClass}`;
+            note.style.left = position.x + 'px';
+            note.style.top = position.y + 'px';
+            note.style.transform = `rotate(${rotation}deg)`;
+            note.innerHTML = `
+                <div class="heart">❤️</div>
+                <button class="close-btn" onclick="this.parentElement.remove()">×</button>
+                <div class="note-content">${getRandomMessage()}</div>
             `;
             
-            // 计算随机位置（确保弹窗完全显示在屏幕内）
-            const maxLeft = window.innerWidth - 300; // 300是弹窗大致宽度
-            const maxTop = window.innerHeight - 200; // 200是弹窗大致高度
-            const randomLeft = Math.floor(Math.random() * maxLeft);
-            const randomTop = Math.floor(Math.random() * maxTop);
-            
-            // 设置弹窗位置
-            popup.style.left = `${randomLeft}px`;
-            popup.style.top = `${randomTop}px`;
-            popup.style.zIndex = '1000';
-            
-            // 添加到页面
-            document.body.appendChild(popup);
-            
-            // 关闭按钮事件
-            popup.querySelector('.close-btn').addEventListener('click', () => {
-                popup.classList.remove('popup-appear');
-                popup.classList.add('popup-disappear');
-                setTimeout(() => {
-                    popup.remove();
-                }, 500);
-            });
-            
-            // 点击弹窗外部关闭（可选）
-            popup.addEventListener('click', (e) => {
-                if (e.target === popup) {
-                    popup.classList.remove('popup-appear');
-                    popup.classList.add('popup-disappear');
-                    setTimeout(() => {
-                        popup.remove();
-                    }, 500);
-                }
-            });
-            
-            // 设置自动关闭（5-10秒随机）
-		const autoCloseTime = 5000 + Math.random() * 5000;
-		setTimeout(() => {
-			popup.classList.remove('popup-appear');
-			popup.classList.add('popup-disappear');
-			setTimeout(() => {
-				popup.remove();
-			}, 500);
-		}, autoCloseTime);
+            document.getElementById('container').appendChild(note);
+            noteIndex++;
         }
-        
-        // 批量生成多个弹窗
-        function generateMultiplePopups() {
-            // 随机生成100+个弹窗
-            const count = 200 + Math.floor(Math.random()*1 * 100);
-            for (let i = 0; i < count; i++) {
-                // 每个弹窗间隔一段时间出现，增加动画效果
-                setTimeout(generatePopup, i * 300);
-            }
+
+        // 计算需要多少便利贴才能填满页面（允许重叠）
+        function calculateInitialNotes() {
+            const container = document.getElementById('container');
+            const noteWidth = 180;
+            const noteHeight = 140;
+            const containerWidth = container.clientWidth;
+            const containerHeight = container.clientHeight - 100;
+            
+            // 计算需要的便利贴数量，允许大量重叠以确保填满屏幕
+            const cols = Math.ceil(containerWidth / (noteWidth * 0.5));
+            const rows = Math.ceil(containerHeight / (noteHeight * 0.5));
+            return cols * rows;
         }
-        
-        // 清除所有弹窗
-        function clearAllPopups() {
-            const popups = document.querySelectorAll('.popup-shadow');
-            popups.forEach(popup => {
-                popup.classList.remove('popup-appear');
-                popup.classList.add('popup-disappear');
-                setTimeout(() => {
-                   // popup.remove();
-                }, 500);
-            });
-        }
-        
-        // 绑定按钮事件
-        document.getElementById('generateBtn').addEventListener('click', generateMultiplePopups);
-        document.getElementById('clearBtn').addEventListener('click', clearAllPopups);
-        
-        // 页面加载时自动生成一次弹窗
+
+        // 页面加载时立即填充便利贴，铺满整个屏幕
         window.addEventListener('load', () => {
-            setTimeout(generateMultiplePopups, 1000);
+            const initialCount = calculateInitialNotes();
+            // 快速生成便利贴填满屏幕
+            for (let i = 0; i < initialCount; i++) {
+                setTimeout(() => createNote(), i * 80);
+            }
+            
+            // 之后每隔8-12秒随机创建新便利贴
+            function scheduleNextNote() {
+                const delay = Math.random() * 4000 + 8000;
+                setTimeout(() => {
+                    createNote();
+                    scheduleNextNote();
+                }, delay);
+            }
+            setTimeout(scheduleNextNote, initialCount * 80 + 2000);
+        });
+
+        // 简单的拖拽功能
+        let draggedElement = null;
+        let offsetX, offsetY;
+
+        document.addEventListener('mousedown', (e) => {
+            if (e.target.classList.contains('note') || e.target.parentElement.classList.contains('note')) {
+                draggedElement = e.target.classList.contains('note') ? e.target : e.target.parentElement;
+                const rect = draggedElement.getBoundingClientRect();
+                offsetX = e.clientX - rect.left;
+                offsetY = e.clientY - rect.top;
+                draggedElement.style.cursor = 'grabbing';
+            }
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (draggedElement) {
+                draggedElement.style.left = (e.clientX - offsetX) + 'px';
+                draggedElement.style.top = (e.clientY - offsetY) + 'px';
+            }
+        });
+
+        document.addEventListener('mouseup', () => {
+            if (draggedElement) {
+                draggedElement.style.cursor = 'move';
+                draggedElement = null;
+            }
         });
     </script>
 </body>
